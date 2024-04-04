@@ -3,9 +3,10 @@ use bevy::window::PrimaryWindow;
 use rand::prelude::*;
 
 use crate::Velocity;
+use crate::Player_stats;
 
 pub const ENEMY_COUNT: i32 = 3;
-pub const ENEMY_SPAWN_time: f32 = 3.0;
+pub const ENEMY_SPAWN_time: f32 = 4.0;
 pub const ENEMY_SIZE: f32 = 64.0;
 pub const ENEMY_SPEED: f32 = 200.0;
 
@@ -22,7 +23,9 @@ impl Plugin for EnemyPlugin {
 }
 
 #[derive(Component)]
-pub struct Enemy {}
+pub struct Enemy {
+    pub id: i32,
+}
 
 #[derive(Resource)]
 pub struct EnemySpawnTimer {
@@ -39,6 +42,7 @@ pub fn spawn_enemies(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
+    mut player_stats: ResMut<Player_stats>,
 ) {
     let window = window_query.get_single().unwrap();
     for _ in 0..ENEMY_COUNT {
@@ -55,8 +59,11 @@ pub fn spawn_enemies(
             Velocity {
                 acceleration: Vec3::new(random::<f32>(), random::<f32>(), 0.0).normalize(),
             },
-            Enemy {},
+            Enemy {
+                id: player_stats.enemy_count,
+            },
         ));
+        player_stats.enemy_count += 1;
     }
 }
 
@@ -80,6 +87,7 @@ pub fn spawn_enemy_over_time(
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
     mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
+    mut player_stats: ResMut<Player_stats>,
 ) {
     if enemy_spawn_timer.timer.finished() {
         let window = window_query.get_single().unwrap();
@@ -95,7 +103,10 @@ pub fn spawn_enemy_over_time(
             Velocity {
                 acceleration: Vec3::new(random::<f32>(), random::<f32>(), 0.0).normalize(),
             },
-            Enemy {},
+            Enemy {
+                id: player_stats.enemy_count,
+            },
         ));
+        player_stats.enemy_count += 1;
     }
 }

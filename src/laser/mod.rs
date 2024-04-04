@@ -17,8 +17,8 @@ pub const LASER_SPAWN_TIME: f32 = 3.0;
 
 #[derive (Component)]
 pub struct Laser {
-    pub pivot_a: Option<Entity>,
-    pub pivot_b: Option<Entity>,
+    pub pivot_a_id: i32,
+    pub pivot_b_id: i32,
 }
 
 #[derive(Resource)]
@@ -41,33 +41,51 @@ pub fn spawn_lasers_over_time(
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
     mut laser_spawn_timer: ResMut<LaserSpawnTimer>,
-    enemy_query: Query<Entity, With<Enemy>>,
+    enemy_query: Query<&Enemy>,
 ) {
     if laser_spawn_timer.timer.finished() {
-        let mut pivot_a = None;
-        let mut pivot_b = None;
-        for transform in enemy_query.iter() {
-            pivot_a = Some(transform);
-            pivot_b = Some(transform);
+        let mut pivot_a_id = 0;
+        let mut pivot_b_id = 0;
+        for enemy in enemy_query.iter() {
+            pivot_a_id = enemy.id;
+            pivot_b_id = enemy.id + 1;
         }
         
 
         commands.spawn((
             SpriteBundle {
                 transform: Transform::from_xyz(0.0, 0.0, 0.0),
-                texture: asset_server.load("sprites/laser.png"),
+                texture: asset_server.load("sprites/developerArrow.png"),
                 ..default()
             },
             Laser {
-                pivot_a: pivot_a,
-                pivot_b: pivot_b,
+                pivot_a_id: pivot_a_id,
+                pivot_b_id: pivot_b_id,
             },
         ));
     }
 }
 
-pub fn move_lasers( mut lasers_query: Query<(&mut Transform, &Laser)>) {
+pub fn move_lasers( 
+    mut lasers_query: Query<(&mut Transform, &Laser)>,
+    enemy_query: Query<(&Transform, &Enemy), Without<Laser>>,
+) {
     for (mut laser_transform, laser) in lasers_query.iter_mut() {
-        laser_transform.translation.x += 1.0;
+        let mut pivot_a: Transform = Transform::from_xyz(0.0, 0.0, 0.0);
+        let mut pivot_b: Transform = Transform::from_xyz(0.0, 0.0, 0.0);
+        for (enemy_transform, enemy) in enemy_query.iter() {
+            if enemy.id == laser.pivot_a_id {
+                pivot_a = *enemy_transform;
+            }
+            if enemy.id == laser.pivot_b_id {
+                pivot_b = *enemy_transform;
+            }
+        }
+        laser_transform.translation = pivot_a.translation;//(pivot_a.translation + pivot_b.translation) / 2.0;
+        laser_transform.scale.x = 0.2;
+        //println!("angle is {}", pivot_a.translation.angle_between(pivot_b.translation));
+        //laser_transform.rotation = Quat::from_rotation_z(((pivot_a.translation + pivot_b.translation) / 2.0).angle_between(pivot_b.translation));
+        //laser_transform.rotation = laser_transform.looking_at(pivot_b.translation, Vec3::X).rotation;
+        laser_transform.rotation = Quat::from_euler(EulerRot::XYZ, 0.0, 0.0, pivot_b.translation.angle_between(pivot_a.translation));
     }
 }

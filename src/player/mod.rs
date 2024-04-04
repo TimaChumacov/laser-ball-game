@@ -102,6 +102,7 @@ pub fn spawn_player(
 pub struct Player_stats {
     pub score: i32,
     pub hitpoints: i32,
+    pub enemy_count: i32,
 }
 
 
@@ -110,6 +111,7 @@ impl Default for Player_stats {
         Player_stats {
             score: 0,
             hitpoints: 3,
+            enemy_count: 0,
         }
     }
 }
