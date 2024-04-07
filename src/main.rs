@@ -124,13 +124,10 @@ pub fn entity_collision(
             
                 dir_away = (transform_1.translation - transform_2.translation).normalize();
                 dir_away *= (ENEMY_SIZE - transform_1.translation.distance(transform_2.translation)) / 2.0;
-                //transform_2.translation += (velocity_2.acceleration - velocity_1.acceleration).normalize();
 
                 transform_1.translation += dir_away;
                 transform_2.translation -= dir_away;
             
-
-            //let normal = (transform_1.translation - transform_2.translation) / (transform_1.translation - transform_2.translation).abs();
             let new_vel_1: Vec3;
             let new_vel_2: Vec3;
             

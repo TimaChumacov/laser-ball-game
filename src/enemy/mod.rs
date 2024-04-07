@@ -5,10 +5,10 @@ use rand::prelude::*;
 use crate::Velocity;
 use crate::Player_stats;
 
-pub const ENEMY_COUNT: i32 = 3;
-pub const ENEMY_SPAWN_time: f32 = 4.0;
+pub const ENEMY_COUNT: i32 = 4;
+pub const ENEMY_SPAWN_time: f32 = 800.0;
 pub const ENEMY_SIZE: f32 = 64.0;
-pub const ENEMY_SPEED: f32 = 200.0;
+pub const ENEMY_SPEED: f32 = 0.0;
 
 pub struct EnemyPlugin;
 

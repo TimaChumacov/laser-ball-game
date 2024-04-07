@@ -63,8 +63,8 @@ pub fn player_attacked(
     for (player_trans, mut player) in player_query.iter_mut() {
         for enemy_trans in enemy_query.iter() {
             if player_trans.translation.distance(enemy_trans.translation) < ENEMY_SIZE {
-                player_stats.hitpoints -= 1;
-                println!("{}", player_stats.hitpoints);
+                //player_stats.hitpoints -= 1;
+                //println!("{}", player_stats.hitpoints);
             }
         }
     }
