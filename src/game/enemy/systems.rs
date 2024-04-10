@@ -2,47 +2,15 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use rand::prelude::*;
 
-use crate::Velocity;
-use crate::Player_stats;
-
-pub const ENEMY_COUNT: i32 = 4;
-pub const ENEMY_SPAWN_time: f32 = 800.0;
-pub const ENEMY_SIZE: f32 = 64.0;
-pub const ENEMY_SPEED: f32 = 0.0;
-
-pub struct EnemyPlugin;
-
-impl Plugin for EnemyPlugin {
-    fn build(&self, app: &mut App) {
-        app.init_resource::<EnemySpawnTimer>()
-           .add_startup_system(spawn_enemies)
-           .add_system(enemy_movement)
-           .add_system(tick_enemy_spawn_timer)
-           .add_system(spawn_enemy_over_time);
-    }
-}
-
-#[derive(Component)]
-pub struct Enemy {
-    pub id: i32,
-}
-
-#[derive(Resource)]
-pub struct EnemySpawnTimer {
-    pub timer: Timer
-}
-
-impl Default for EnemySpawnTimer {
-    fn default() -> Self {
-        EnemySpawnTimer { timer: Timer::from_seconds(ENEMY_SPAWN_time, TimerMode::Repeating) }
-    }
-}
+use crate::general::components::Velocity;
+use crate::game::player::components::PlayerStats;
+use super::components::*;
 
 pub fn spawn_enemies(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
-    mut player_stats: ResMut<Player_stats>,
+    mut player_stats: ResMut<PlayerStats>,
 ) {
     let window = window_query.get_single().unwrap();
     for _ in 0..ENEMY_COUNT {
@@ -67,7 +35,14 @@ pub fn spawn_enemies(
     }
 }
 
-
+pub fn despawn_enemies(
+    mut commands: Commands,
+    enemy_query: Query<Entity, With<Enemy>>
+) {
+    for enemy_entity in enemy_query.iter() {
+        commands.entity(enemy_entity).despawn();
+    }
+}
 
 pub fn enemy_movement(
     mut enemies_query: Query<(&mut Transform, &mut Velocity), With<Enemy>>,
@@ -86,8 +61,8 @@ pub fn spawn_enemy_over_time(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
-    mut enemy_spawn_timer: ResMut<EnemySpawnTimer>,
-    mut player_stats: ResMut<Player_stats>,
+    enemy_spawn_timer: ResMut<EnemySpawnTimer>,
+    mut player_stats: ResMut<PlayerStats>,
 ) {
     if enemy_spawn_timer.timer.finished() {
         let window = window_query.get_single().unwrap();

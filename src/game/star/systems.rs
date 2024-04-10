@@ -1,33 +1,8 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use rand::prelude::*;
-pub struct StarPlugin;
 
-pub const STAR_COUNT: i32 = 5;
-pub const STAR_SPAWN_time: f32 = 3.0;
-
-impl Plugin for StarPlugin {
-    fn build(&self, app: &mut App) {
-        app.init_resource::<StarSpawnTimer>()
-        .add_system(tick_star_spawn_timer)
-        .add_system(spawn_stars_over_time)
-        .add_startup_system(spawn_stars);
-    }
-}
-
-#[derive(Resource)]
-pub struct StarSpawnTimer {
-    pub timer: Timer
-}
-
-impl Default for StarSpawnTimer {
-    fn default() -> Self {
-        StarSpawnTimer { timer: Timer::from_seconds(STAR_SPAWN_time, TimerMode::Repeating) }
-    }
-}
-
-#[derive (Component)]
-pub struct Star {}
+use super::components::*;
 
 pub fn spawn_stars(
     mut commands: Commands,
@@ -51,6 +26,15 @@ pub fn spawn_stars(
     }
 }
 
+pub fn despawn_stars(
+    mut commands: Commands,
+    star_query: Query<Entity, With<Star>>
+) {
+    for star_entity in star_query.iter() {
+        commands.entity(star_entity).despawn();
+    }
+}
+
 pub fn tick_star_spawn_timer(mut star_spawn_timer: ResMut<StarSpawnTimer>, time: Res<Time>) {
     star_spawn_timer.timer.tick(time.delta());
 }
@@ -59,7 +43,7 @@ pub fn spawn_stars_over_time(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
-    mut star_spawn_timer: ResMut<StarSpawnTimer>,
+    star_spawn_timer: ResMut<StarSpawnTimer>,
 ) {
     if star_spawn_timer.timer.finished() {
         let window = window_query.get_single().unwrap();

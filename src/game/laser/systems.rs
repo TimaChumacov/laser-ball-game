@@ -1,41 +1,17 @@
 use bevy::prelude::*;
-use bevy::time;
 use rand::prelude::*;
-use crate::Enemy;
-use crate::Player;
-use crate::Player_stats;
-pub struct LaserPlugin;
+use crate::game::enemy::components::Enemy;
+use crate::game::player::components::Player;
+use crate::game::player::components::PlayerStats;
 
-impl Plugin for LaserPlugin {
-    fn build(&self, app: &mut App) {
-        app.init_resource::<LaserSpawnTimer>()
-        .add_system(tick_laser_spawn_timer)
-        .add_system(spawn_lasers_over_time)
-        .add_system(move_lasers)
-        .add_system(laser_animation)
-        .add_system(laser_collision);
-    }
-}
+use super::components::*;
 
-pub const LASER_SPAWN_TIME: f32 = 3.0;
-pub const LASER_SPRITE_WIDTH: f32 = 1551.0;
-
-#[derive (Component)]
-pub struct Laser {
-    pub pivot_a_id: i32,
-    pub pivot_b_id: i32,
-    pub lifetime: f32,
-    pub damaged_player: bool,
-}
-
-#[derive(Resource)]
-pub struct LaserSpawnTimer {
-    pub timer: Timer
-}
-
-impl Default for LaserSpawnTimer {
-    fn default() -> Self {
-        LaserSpawnTimer { timer: Timer::from_seconds(LASER_SPAWN_TIME, TimerMode::Repeating) }
+pub fn despawn_lasers(
+    mut commands: Commands,
+    laser_query: Query<Entity, With<Laser>>
+) {
+    for laser_entity in laser_query.iter() {
+        commands.entity(laser_entity).despawn();
     }
 }
 
@@ -47,7 +23,7 @@ pub fn spawn_lasers_over_time(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     laser_spawn_timer: ResMut<LaserSpawnTimer>,
-    player_stats: ResMut<Player_stats>,
+    player_stats: ResMut<PlayerStats>,
 ) {
     if laser_spawn_timer.timer.finished() {
         let pivot_a_id = rand::thread_rng().gen_range(0..player_stats.enemy_count - 1);
@@ -118,9 +94,9 @@ pub fn laser_collision(
     mut lasers_query: Query<&mut Laser>,
     player_query: Query<&Transform, With<Player>>,
     enemy_query: Query<(&Transform, &Enemy)>,
-    mut player_stats: ResMut<Player_stats>,
+    mut player_stats: ResMut<PlayerStats>,
 ) {
-    for (mut laser) in lasers_query.iter_mut() {
+    for mut laser in lasers_query.iter_mut() {
         let (pivot_a, pivot_b) = find_enemies_by_id(&enemy_query, laser.pivot_a_id, laser.pivot_b_id);
         let player_transform = player_query.single();
         let distance_between_pivots = Vec3::distance(pivot_a.translation, pivot_b.translation);

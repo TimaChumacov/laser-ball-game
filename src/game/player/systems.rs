@@ -1,36 +1,16 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
-use crate::Velocity;
-use crate::Star;
-use crate::enemy::*;
-pub struct PlayerPlugin;
-
-impl Plugin for PlayerPlugin {
-    fn build(&self, app: &mut App) {
-        app.init_resource::<Player_stats>()
-        .add_startup_system(spawn_player)
-        .add_system(player_movement)
-        .add_system(player_attacked)
-        .add_system(collect_stars);
-    }
-}
-
-pub const PLAYER_SIZE: f32 = 64.0;
-pub const PLAYER_SPEED: f32 = 10.0;
-
-#[derive(Component)]
-pub struct Player {
-    pub acc_mod: f32,
-    pub dec_mod: f32,
-    pub acc_max: f32,
-}
+use crate::general::components::Velocity;
+use crate::game::star::components::Star;
+//use crate::game::enemy::components::{Enemy, ENEMY_SIZE};
+use super::components::*;
 
 pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut player_query: Query<(&mut Transform, &mut Velocity, &mut Player)>,
     time: Res<Time>,
 ) {
-    for (mut transform, mut player_velocity, mut player) in player_query.iter_mut() {
+    for (mut transform, mut player_velocity, player) in player_query.iter_mut() {
         //let mut direction = Vec3::ZERO;
         let acc_mod = player.acc_mod.clone();
         
@@ -54,10 +34,10 @@ pub fn player_movement(
 
 }
 
-pub fn player_attacked(
+/*pub fn player_attacked(
     enemy_query: Query<&Transform, With<Enemy>>,
     mut player_query: Query<(&Transform, &mut Player)>,
-    mut player_stats: ResMut<Player_stats>,
+    player_stats: ResMut<PlayerStats>,
 
 ) {
     for (player_trans, mut player) in player_query.iter_mut() {
@@ -68,7 +48,7 @@ pub fn player_attacked(
             }
         }
     }
-}
+}*/
 
 pub fn spawn_player(
     mut commands: Commands,
@@ -98,17 +78,16 @@ pub fn spawn_player(
     ));
 }
 
-#[derive(Resource)]
-pub struct Player_stats {
-    pub score: i32,
-    pub hitpoints: i32,
-    pub enemy_count: i32,
+pub fn despawn_player(
+    mut commands: Commands,
+    player_query: Query<Entity, With<Player>>
+) {
+    commands.entity(player_query.single()).despawn();
 }
 
-
-impl Default for Player_stats {
+impl Default for PlayerStats {
     fn default() -> Self {
-        Player_stats {
+        PlayerStats {
             score: 0,
             hitpoints: 3,
             enemy_count: 0,
@@ -119,10 +98,10 @@ impl Default for Player_stats {
 pub fn collect_stars(
     mut commands: Commands,
     star_query: Query<(Entity, &Transform),  With<Star>>,
-    mut player_query: Query<(&Transform, &mut Player)>,
-    mut player_stats: ResMut<Player_stats>,
+    mut player_query: Query<&Transform, With<Player>>,
+    mut player_stats: ResMut<PlayerStats>,
 ) {
-    for (player_trans, mut player) in player_query.iter_mut() {
+    for player_trans in player_query.iter_mut() {
         for (star_entity, star_trans) in star_query.iter() {
             if player_trans.translation.distance(star_trans.translation) < 48.0 {
                 player_stats.score += 1;
