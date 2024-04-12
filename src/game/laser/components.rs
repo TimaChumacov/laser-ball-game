@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 pub const LASER_SPAWN_TIME: f32 = 3.0;
-pub const LASER_SPRITE_WIDTH: f32 = 1551.0;
+pub const LASER_SPRITE_WIDTH: f32 = 1041.0;
 
 #[derive (Component)]
 pub struct Laser {

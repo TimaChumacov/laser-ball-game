@@ -32,7 +32,7 @@ pub fn spawn_lasers_over_time(
         commands.spawn((
             SpriteBundle {
                 transform: Transform::from_xyz(0.0, 0.0, 0.0),
-                texture: asset_server.load("sprites/laser.png"),
+                texture: asset_server.load("sprites/seamless_laser.png"),
                 ..default()
             },
             Laser {
