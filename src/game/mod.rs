@@ -12,6 +12,9 @@ use player::PlayerPlugin;
 pub mod laser;
 use laser::LaserPlugin;
 
+pub mod game_ui;
+use game_ui::GameUIPlugin;
+
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum GameState {
     Running,
@@ -26,7 +29,8 @@ impl Plugin for GamePlugin {
         .add_plugin(EnemyPlugin)
         .add_plugin(StarPlugin)
         .add_plugin(PlayerPlugin)
-        .add_plugin(LaserPlugin);
+        .add_plugin(LaserPlugin)
+        .add_plugin(GameUIPlugin);
     }
 }
 
