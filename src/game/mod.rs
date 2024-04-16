@@ -17,8 +17,8 @@ use game_ui::GameUIPlugin;
 
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum GameState {
-    Running,
     #[default]
+    Running,
     Paused,
 }
 pub struct GamePlugin;

@@ -1,13 +1,12 @@
 use bevy::prelude::*;
 use super::components::*;
 use super::styles::*;
-use crate::game::player::components::PlayerStats;
 
 pub fn spawn_hud(
     mut commands: Commands, 
     asset_server: Res<AssetServer>,
 ) {
-    let _hud_entity = build_main_menu(&mut commands, &asset_server);
+    let _hud_entity = build_hud(&mut commands, &asset_server);
 }
 
 pub fn despawn_hud(
@@ -17,7 +16,7 @@ pub fn despawn_hud(
     commands.entity(hud_query.single()).despawn_recursive();
 }
 
-pub fn build_main_menu(
+pub fn build_hud(
     commands: &mut Commands, 
     asset_server: &Res<AssetServer>,
 ) -> Entity {

@@ -120,12 +120,17 @@ pub fn enter_game_state(
 pub fn enter_main_menu(
     keyboard_input: Res<Input<KeyCode>>,
     app_state: Res<State<AppState>>,
+    game_state: Res<State<GameState>>,
     mut next_app_state: ResMut<NextState<AppState>>,
+    mut next_game_state: ResMut<NextState<GameState>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
         if app_state.0 == AppState::Game {
             next_app_state.set(AppState::MainMenu);
             println!("in main menu.");
+        }
+        if game_state.0 == GameState::Paused {
+            next_game_state.set(GameState::Running);
         }
     }
 }

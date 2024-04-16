@@ -1,25 +1,22 @@
 use bevy::prelude::*;
-use crate::AppState;
 
-pub mod styles;
-pub mod components;
+mod hud;
+use hud::HUDPlugin;
 
-mod hud_layout;
-use hud_layout::*;
-
-mod systems;
-use systems::*;
+mod pause;
+use pause::PausePlugin;
 
 pub struct GameUIPlugin;
 
 impl Plugin for GameUIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn_hud.in_schedule(OnEnter(AppState::Game)))
-        .add_system(despawn_hud.in_schedule(OnExit(AppState::Game)));
-        //.add_system(update_hp);
+        app.add_plugin(HUDPlugin)
+           .add_plugin(PausePlugin);
+        // .add_system(spawn_pause_menu.in_schedule(OnEnter(GameState::Paused)))
+        // .add_system(despawn_pause_menu.in_schedule(OnExit(GameState::Paused)))
         // .add_systems(
         //     (
-        //         update_hp,
+        //         update_hud,
         //     )
         //     .in_set(OnUpdate(AppState::Game))
         // );

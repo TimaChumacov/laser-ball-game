@@ -27,8 +27,6 @@ impl Velocity {
         } else if self.acceleration.y < 0.0 {
             self.acceleration.y += player.dec_mod;
         }
-        //self.acceleration.x *= 0.95;
-        //self.acceleration.y *= 0.95;
     }
 
     pub fn limit_acceleration(&mut self, player: &Mut<'_, Player>) {
