@@ -24,6 +24,7 @@ pub const HUD_IMAGE_STYLE: Style = Style {
 };
 
 pub const WRAPP_STYLE: Style = Style {
+    position_type: PositionType::Absolute,
     size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
     gap: Size::new(Val::Px(18.0), Val::Px(18.0)),
     ..Style::DEFAULT

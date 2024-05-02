@@ -40,6 +40,8 @@ pub fn spawn_lasers_over_time(
                 pivot_b_id: pivot_b_id,
                 lifetime: 0.0,
                 damaged_player: false,
+                played_warning_sfx: false,
+                played_laser_sfx: false,
             },
         ));
     }
@@ -77,15 +79,29 @@ pub fn laser_animation(
     mut commands: Commands,
     mut lasers_query: Query<(Entity, &mut Transform, &mut Laser)>,
     time: Res<Time>,
+    asset_server: Res<AssetServer>,
+    audio: Res<Audio>,
 ) {
     for (laser_entity, mut laser_transform, mut laser) in lasers_query.iter_mut() {
         laser.lifetime += time.delta_seconds();
         match laser.lifetime {
-            x if x < 0.3 => laser_transform.scale.y = laser.lifetime * 2.0,
+            x if x < 0.3 => {
+                laser_transform.scale.y = laser.lifetime * 2.0;
+                if !laser.played_warning_sfx {
+                    audio.play(asset_server.load("audio/warning.ogg"));
+                    laser.played_warning_sfx = true;
+                }
+            },
             x if x < 0.6 => laser_transform.scale.y = (laser.lifetime - 0.3) * 2.0,
             x if x < 1.3 => laser_transform.scale.y = 0.0,
-            x if x > 2.0 => commands.entity(laser_entity).despawn(),
-            _ => laser_transform.scale.y = 1.0,
+            x if x > 2.8 => commands.entity(laser_entity).despawn(),
+            _ => {
+                laser_transform.scale.y = 1.0;
+                if !laser.played_laser_sfx {
+                    audio.play(asset_server.load("audio/laser_sfx.ogg"));
+                    laser.played_laser_sfx = true;
+                }
+            }
         }
     }
 }

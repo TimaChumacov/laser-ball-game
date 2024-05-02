@@ -15,4 +15,16 @@ pub struct PlayerStats {
     pub score: i32,
     pub hitpoints: i32,
     pub enemy_count: i32,
+    pub invincible: bool,
+}
+
+#[derive(Resource)]
+pub struct InvincibilityTimer {
+    pub timer: Timer
+}
+
+impl Default for InvincibilityTimer {
+    fn default() -> Self {
+        InvincibilityTimer { timer: Timer::from_seconds(1.0, TimerMode::Once) }
+    }
 }

@@ -2,7 +2,8 @@ use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use crate::general::components::Velocity;
 use crate::game::star::components::Star;
-//use crate::game::enemy::components::{Enemy, ENEMY_SIZE};
+use crate::game::enemy::components::{Enemy, ENEMY_SIZE};
+use crate::AppState;
 use super::components::*;
 
 pub fn player_movement(
@@ -11,7 +12,6 @@ pub fn player_movement(
     time: Res<Time>,
 ) {
     for (mut transform, mut player_velocity, player) in player_query.iter_mut() {
-        //let mut direction = Vec3::ZERO;
         let acc_mod = player.acc_mod.clone();
         
         if keyboard_input.pressed(KeyCode::A) {
@@ -34,21 +34,43 @@ pub fn player_movement(
 
 }
 
-/*pub fn player_attacked(
+pub fn player_attacked(
     enemy_query: Query<&Transform, With<Enemy>>,
-    mut player_query: Query<(&Transform, &mut Player)>,
-    player_stats: ResMut<PlayerStats>,
+    player_query: Query<&Transform, With<Player>>,
+    mut player_stats: ResMut<PlayerStats>,
 
 ) {
-    for (player_trans, mut player) in player_query.iter_mut() {
+    for player_trans in player_query.iter() {
         for enemy_trans in enemy_query.iter() {
-            if player_trans.translation.distance(enemy_trans.translation) < ENEMY_SIZE {
-                //player_stats.hitpoints -= 1;
-                //println!("{}", player_stats.hitpoints);
+            if !player_stats.invincible && player_trans.translation.distance(enemy_trans.translation) < ENEMY_SIZE {
+                player_stats.hitpoints -= 1;
+                player_stats.invincible = true;
+                println!("{}", player_stats.hitpoints);
             }
         }
     }
-}*/
+}
+
+pub fn tick_invincibility_timer(mut invincibility_timer: ResMut<InvincibilityTimer>, time: Res<Time>, mut player_stats: ResMut<PlayerStats>) {
+    if player_stats.invincible == true {
+        invincibility_timer.timer.tick(time.delta());
+        println!("{}", invincibility_timer.timer.elapsed_secs());
+        if invincibility_timer.timer.finished() {
+            player_stats.invincible = false;
+            invincibility_timer.timer.reset();
+        }
+    }
+}
+
+pub fn kill_player(
+    player_stats: ResMut<PlayerStats>,
+    mut next_app_state: ResMut<NextState<AppState>>,
+) {
+    if player_stats.hitpoints <= 0 {
+        println!("{}", player_stats.hitpoints);
+        next_app_state.set(AppState::GameOver);
+    }
+}
 
 pub fn spawn_player(
     mut commands: Commands,
@@ -89,8 +111,9 @@ impl Default for PlayerStats {
     fn default() -> Self {
         PlayerStats {
             score: 0,
-            hitpoints: 3,
+            hitpoints: 33333,
             enemy_count: 0,
+            invincible: false,
         }
     }
 }
@@ -100,11 +123,14 @@ pub fn collect_stars(
     star_query: Query<(Entity, &Transform),  With<Star>>,
     mut player_query: Query<&Transform, With<Player>>,
     mut player_stats: ResMut<PlayerStats>,
+    asset_server: Res<AssetServer>,
+    audio: Res<Audio>,
 ) {
     for player_trans in player_query.iter_mut() {
         for (star_entity, star_trans) in star_query.iter() {
             if player_trans.translation.distance(star_trans.translation) < 48.0 {
                 player_stats.score += 1;
+                audio.play(asset_server.load("audio/star.ogg"));
                 println!("score: {}", player_stats.score);
                 commands.entity(star_entity).despawn();
             }

@@ -9,6 +9,8 @@ pub struct Laser {
     pub pivot_b_id: i32,
     pub lifetime: f32,
     pub damaged_player: bool,
+    pub played_warning_sfx: bool,
+    pub played_laser_sfx: bool,
 }
 
 #[derive(Resource)]

@@ -13,8 +13,8 @@ impl Plugin for GeneralPlugin {
     fn build(&self, app: &mut App) {
         app.add_startup_system(spawn_camera)
         .add_system(toggle_pause.run_if(in_state(AppState::Game)))
-        .add_system(enter_game_state)
-        .add_system(enter_main_menu)
+        // .add_system(enter_game_state)
+        // .add_system(enter_main_menu)
            .add_systems(
                 (
                     entity_collision,

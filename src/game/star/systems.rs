@@ -17,7 +17,7 @@ pub fn spawn_stars(
                     random::<f32>() * window.width(),
                     random::<f32>() * window.height(),
                     0.0,
-                ),
+                ).with_scale(Vec3::new(0.1, 0.1, 0.0)),
                 texture: asset_server.load("sprites/star.png"),
                 ..default()
             },
@@ -52,7 +52,7 @@ pub fn spawn_stars_over_time(
 
         commands.spawn((
             SpriteBundle {
-                transform: Transform::from_xyz(random_x, random_y, 0.0),
+                transform: Transform::from_xyz(random_x, random_y, 0.0).with_scale(Vec3::new(0.1, 0.1, 0.0)),
                 texture: asset_server.load("sprites/star.png"),
                 ..default()
             },
