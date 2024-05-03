@@ -16,13 +16,5 @@ impl Plugin for GameUIPlugin {
         app.add_plugin(HUDPlugin)
            .add_plugin(PausePlugin)
            .add_plugin(GameOverPlugin);
-        // .add_system(spawn_pause_menu.in_schedule(OnEnter(GameState::Paused)))
-        // .add_system(despawn_pause_menu.in_schedule(OnExit(GameState::Paused)))
-        // .add_systems(
-        //     (
-        //         update_hud,
-        //     )
-        //     .in_set(OnUpdate(AppState::Game))
-        // );
     }
 }

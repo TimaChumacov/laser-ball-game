@@ -8,6 +8,7 @@ use systems::*;
 
 pub mod components;
 use components::*;
+
 pub struct StarPlugin;
 
 impl Plugin for StarPlugin {

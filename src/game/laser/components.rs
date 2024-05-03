@@ -5,10 +5,10 @@ pub const LASER_SPRITE_WIDTH: f32 = 1041.0;
 
 #[derive (Component)]
 pub struct Laser {
+    // "pivots" are the enemies on which both ends of a laser are. Lasers save the id's of those enemies here.
     pub pivot_a_id: i32,
     pub pivot_b_id: i32,
     pub lifetime: f32,
-    pub damaged_player: bool,
     pub played_warning_sfx: bool,
     pub played_laser_sfx: bool,
 }

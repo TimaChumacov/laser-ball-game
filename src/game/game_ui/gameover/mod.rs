@@ -4,8 +4,8 @@ use crate::AppState;
 pub mod styles;
 pub mod components;
 
-mod gameover_layout;
-use gameover_layout::*;
+mod layout;
+use layout::*;
 
 mod interactions;
 use interactions::*;

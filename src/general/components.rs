@@ -1,13 +1,17 @@
 use bevy::prelude::*;
-
 use crate::game::player::components::Player;
 
+// player and enemies are the same size
+pub const ENTITY_SPRITE_DIAMETER: f32 = 64.0;
+
+// Velocity is here because both the player and the enemies use it
 #[derive(Component)]
 pub struct Velocity {
     pub acceleration: Vec3,
 }
 
 impl Velocity {
+    // reverse are used for mirroring momentum after hitting a wall
     pub fn reverse_x(&mut self) {
         self.acceleration.x *= -1.0;
     }

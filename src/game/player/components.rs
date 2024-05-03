@@ -1,13 +1,12 @@
 use bevy::prelude::*;
 
-pub const PLAYER_SIZE: f32 = 64.0;
-pub const PLAYER_SPEED: f32 = 10.0;
+pub const PLAYER_SPEED: f32 = 500.0;
 
 #[derive(Component)]
 pub struct Player {
-    pub acc_mod: f32,
-    pub dec_mod: f32,
-    pub acc_max: f32,
+    pub acc_mod: f32, // how fast the ball accelerates
+    pub dec_mod: f32, // how fast the ball deccelerates
+    pub acc_max: f32, // maximum acceleration
 }
 
 #[derive(Resource)]
@@ -15,7 +14,7 @@ pub struct PlayerStats {
     pub score: i32,
     pub hitpoints: i32,
     pub enemy_count: i32,
-    pub invincible: bool,
+    pub invincible: bool, // after being hit the player becomes invincible for a short time
 }
 
 #[derive(Resource)]

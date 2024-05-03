@@ -6,7 +6,7 @@ pub fn spawn_hud(
     mut commands: Commands, 
     asset_server: Res<AssetServer>,
 ) {
-    let _hud_entity = build_hud(&mut commands, &asset_server);
+    build_hud(&mut commands, &asset_server);
 }
 
 pub fn despawn_hud(

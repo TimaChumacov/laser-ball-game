@@ -19,7 +19,7 @@ impl Plugin for EnemyPlugin {
                 (
                     enemy_movement,
                     tick_enemy_spawn_timer,
-                    spawn_enemy_over_time,
+                    spawn_enemies_over_time,
                 )
                 .in_set(OnUpdate(AppState::Game))
                 .in_set(OnUpdate(GameState::Running))

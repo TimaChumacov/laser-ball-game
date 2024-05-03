@@ -1,6 +1,5 @@
 use bevy::prelude::*;
 use crate::game::player::components::PlayerStats;
-
 use super::components::{HitpointsText, ScoreText};
 
 pub fn update_hud(

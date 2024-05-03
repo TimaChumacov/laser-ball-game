@@ -15,6 +15,7 @@ use laser::LaserPlugin;
 pub mod game_ui;
 use game_ui::GameUIPlugin;
 
+// determines, whether the game is paused
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum GameState {
     #[default]

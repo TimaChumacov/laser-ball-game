@@ -4,8 +4,8 @@ use crate::AppState;
 pub mod styles;
 pub mod components;
 
-mod hud_layout;
-use hud_layout::*;
+mod layout;
+use layout::*;
 
 mod systems;
 use systems::*;

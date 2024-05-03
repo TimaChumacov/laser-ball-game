@@ -7,6 +7,7 @@ use systems::*;
 
 pub mod components;
 use components::*;
+
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {

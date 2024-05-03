@@ -1,8 +1,5 @@
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
-
-use crate::game::enemy::components::ENEMY_SIZE;
-use crate::game::player::components::PLAYER_SIZE;
 use super::components::*;
 use crate::game::GameState;
 
@@ -11,7 +8,6 @@ pub fn spawn_camera(
     window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
     let window = window_query.get_single().unwrap();
-
     commands.spawn(Camera2dBundle {
             transform: Transform::from_xyz(
                 window.width() / 2.0,
@@ -22,6 +18,7 @@ pub fn spawn_camera(
         });
 }
 
+// works for both the player and the enemies
 pub fn confine_entities_in_screen(
     mut entity_query: Query<(&mut Transform, &mut Velocity)>,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -31,23 +28,23 @@ pub fn confine_entities_in_screen(
     for (mut transform, mut velocity) in entity_query.iter_mut() {
         let window = window_query.get_single().unwrap();
 
-        let half_player_size: f32 = PLAYER_SIZE / 2.0;
-        let x_min: f32 = 0.0 + half_player_size;
-        let x_max: f32 = window.width() - half_player_size;
-        let y_min: f32 = 0.0 + half_player_size;
-        let y_max: f32 = window.height() - half_player_size;
+        let half_entity_size: f32 = ENTITY_SPRITE_DIAMETER / 2.0;
+        let x_min: f32 = 0.0 + half_entity_size;
+        let x_max: f32 = window.width() - half_entity_size;
+        let y_min: f32 = 0.0 + half_entity_size;
+        let y_max: f32 = window.height() - half_entity_size;
 
+        // makes sure staying next to a wall won't trigger a sfx each frame
         if((transform.translation.x < x_min ||
             transform.translation.x > x_max) &&
             velocity.acceleration.x.abs() > 0.7) ||
           ((transform.translation.y < y_min ||
             transform.translation.y > y_max) &&
             velocity.acceleration.y.abs() > 0.7) {
-            println!("{}", velocity.acceleration.length());
-            //velocity.acceleration -= 1.0;
             audio.play(asset_server.load("audio/bump.ogg"));
         }
 
+        // player and enemies get their momentum mirrored after hitting a wall
         if transform.translation.x < x_min {
             transform.translation.x = x_min;
             velocity.reverse_x();
@@ -66,6 +63,7 @@ pub fn confine_entities_in_screen(
     }
 }
 
+// works for both the player and the enemies
 pub fn entity_collision(
     mut entity_query: Query<(&mut Transform, &mut Velocity)>,
     asset_server: Res<AssetServer>,
@@ -73,11 +71,11 @@ pub fn entity_collision(
 ) {
     let mut combinations = entity_query.iter_combinations_mut();
     while let Some([(mut transform_1, mut velocity_1), (mut transform_2, mut velocity_2)]) = combinations.fetch_next() {
-        if transform_1.translation.distance(transform_2.translation) < ENEMY_SIZE {
+        if transform_1.translation.distance(transform_2.translation) < ENTITY_SPRITE_DIAMETER {
             let mut dir_away: Vec3;
             
             dir_away = (transform_1.translation - transform_2.translation).normalize();
-            dir_away *= (ENEMY_SIZE - transform_1.translation.distance(transform_2.translation)) / 2.0;
+            dir_away *= (ENTITY_SPRITE_DIAMETER - transform_1.translation.distance(transform_2.translation)) / 2.0;
 
             transform_1.translation += dir_away;
             transform_2.translation -= dir_away;

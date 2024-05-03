@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-pub const STAR_COUNT: i32 = 5;
+pub const STAR_COUNT: i32 = 5; // initial stars spawned
 pub const STAR_SPAWN_TIME: f32 = 3.0;
 
 #[derive(Resource)]

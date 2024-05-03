@@ -4,8 +4,8 @@ use crate::game::GameState;
 pub mod styles;
 pub mod components;
 
-mod pause_layout;
-use pause_layout::*;
+mod layout;
+use layout::*;
 
 mod interactions;
 use interactions::*;

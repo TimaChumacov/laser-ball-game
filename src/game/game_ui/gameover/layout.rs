@@ -1,25 +1,29 @@
 use bevy::prelude::*;
 use super::components::*;
 use super::styles::*;
+use crate::game::player::components::PlayerStats;
 
-pub fn spawn_pause_menu(
+pub fn spawn_gameover(
     mut commands: Commands, 
     asset_server: Res<AssetServer>,
+    player_stats: Res<PlayerStats>,
 ) {
-    let _hud_entity = build_pause_menu(&mut commands, &asset_server);
+    build_gameover(&mut commands, &asset_server, &player_stats);
 }
 
-pub fn despawn_pause_menu(
+pub fn despawn_gameover(
     mut commands: Commands,
-    hud_query: Query<Entity, With<PauseMenu>>,
+    hud_query: Query<Entity, With<GameOverScreen>>,
 ) {
     commands.entity(hud_query.single()).despawn_recursive();
 }
 
-pub fn build_pause_menu(
+pub fn build_gameover(
     commands: &mut Commands, 
     asset_server: &Res<AssetServer>,
+    player_stats: &Res<PlayerStats>,
 ) -> Entity {
+    // --- Wrapp ---
     let main_menu_entity = commands.spawn(
         (
             NodeBundle {
@@ -27,7 +31,7 @@ pub fn build_pause_menu(
                 background_color: MENU_BG_COLOR.into(),
                 ..default()
             },
-            PauseMenu {}
+            GameOverScreen {}
         )
     )
     .with_children(|parent| {
@@ -44,7 +48,7 @@ pub fn build_pause_menu(
                     text: Text {
                         sections: vec![
                             TextSection::new(
-                                "GAME PAUSED",
+                                "GAME OVER",
                                 TextStyle {
                                     font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                                     font_size: 50.0,
@@ -58,24 +62,26 @@ pub fn build_pause_menu(
                     ..default()
                 }
             );
-            //--- Resume button ---
+            //--- Score section ---
             parent.spawn(
-                (
-                    ButtonBundle {
-                        style: BUTTON_STYLE,
-                        background_color: BUTTON_COLOR.into(),
-                        ..default()
-                    },
-                    ResumeButton {}
-                )
-            )
-            .with_children(|parent| {
+                NodeBundle {
+                    style: BUTTON_STYLE,
+                    ..default()
+                },
+            ).with_children(|parent| {
                 parent.spawn(
+                ImageBundle {
+                    style: IMAGE_STYLE,
+                    image: asset_server.load("sprites/star.png").into(),
+                    ..default()
+                }
+                );
+                parent.spawn((
                     TextBundle {
                         text: Text {
                             sections: vec![
                                 TextSection::new(
-                                    "RESUME",
+                                    player_stats.score.to_string(),
                                     TextStyle {
                                         font: asset_server.load("fonts/FiraSans-Bold.ttf"),
                                         font_size: 32.0,
@@ -87,8 +93,9 @@ pub fn build_pause_menu(
                             ..default()
                         },
                         ..default()
-                    }
-                );
+                    },
+                    FinalScore {}
+                ));
             });
             //--- ToMainMenu button ---
             parent.spawn(

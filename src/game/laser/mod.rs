@@ -7,6 +7,7 @@ use systems::*;
 
 pub mod components;
 use components::*;
+
 pub struct LaserPlugin;
 
 impl Plugin for LaserPlugin {
