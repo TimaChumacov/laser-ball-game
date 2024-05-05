@@ -109,6 +109,25 @@ pub fn build_hud(
                 ));
             });
         });
+        parent.spawn(
+            TextBundle {
+                text: Text {
+                    sections: vec![
+                        TextSection::new(
+                            "[ESC] to pause",
+                            TextStyle {
+                                font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                                font_size: 12.0,
+                                color: Color::WHITE
+                            }
+                        )
+                    ],
+                    alignment: TextAlignment::Center,
+                    ..default()
+                },
+                ..default()
+            }
+        );
     })
     .id();
 

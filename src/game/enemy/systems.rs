@@ -76,9 +76,10 @@ pub fn spawn_enemies_over_time(
         loop { 
             random_x = random::<f32>() * window.width();
             random_y = random::<f32>() * window.height();
-            let player_transform = player_query.single();
-            if Vec3::new(random_x, random_y, 0.0).distance(player_transform.translation) > 150.0 {
-                break;
+            if let Ok(player_transform) = player_query.get_single() {
+                if Vec3::new(random_x, random_y, 0.0).distance(player_transform.translation) > 150.0 {
+                    break;
+                }
             }
         }
         commands.spawn((

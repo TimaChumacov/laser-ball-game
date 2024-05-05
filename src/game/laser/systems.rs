@@ -31,7 +31,8 @@ pub fn spawn_lasers_over_time(
         
         commands.spawn((
             SpriteBundle {
-                transform: Transform::from_xyz(0.0, 0.0, 0.0),
+                // spawns lasers ot ouf the screen (they are moved the next frame)
+                transform: Transform::from_xyz(-1000.0, -1000.0, 0.0),
                 texture: asset_server.load("sprites/seamless_laser.png"),
                 ..default()
             },
@@ -117,16 +118,17 @@ pub fn laser_collision(
 ) {
     for laser in lasers_query.iter() {
         let (pivot_a, pivot_b) = find_enemies_by_id(&enemy_query, laser.pivot_a_id, laser.pivot_b_id);
-        let player_transform = player_query.single();
-        // if players distance to 2 pivots is similar to the distance between 2 pivots themselfs, then player is close to a laser
-        let distance_between_pivots = Vec3::distance(pivot_a.translation, pivot_b.translation);
-        let player_distance_to_pivots = Vec3::distance(player_transform.translation, pivot_a.translation) + 
-                                        Vec3::distance(player_transform.translation, pivot_b.translation);
-        // the value of 5.75 is eyeballed so the hitbox isn't pixel accurate
-        if (player_distance_to_pivots - distance_between_pivots) < 5.75 && !player_stats.invincible && laser.lifetime > 1.3 {
-            player_stats.hitpoints -= 1;
-            println!("laser touched! players hp: {}", player_stats.hitpoints);
-            player_stats.invincible = true;
+        if let Ok(player_transform) = player_query.get_single() {
+            // if players distance to 2 pivots is similar to the distance between 2 pivots themselfs, then player is close to a laser
+            let distance_between_pivots = Vec3::distance(pivot_a.translation, pivot_b.translation);
+            let player_distance_to_pivots = Vec3::distance(player_transform.translation, pivot_a.translation) + 
+                                            Vec3::distance(player_transform.translation, pivot_b.translation);
+            // the value of 5.75 is eyeballed so the hitbox isn't pixel accurate
+            if (player_distance_to_pivots - distance_between_pivots) < 5.75 && !player_stats.invincible && laser.lifetime > 1.3 {
+                player_stats.hitpoints -= 1;
+                println!("laser touched! players hp: {}", player_stats.hitpoints);
+                player_stats.invincible = true;
+            }
         }
     }
 }

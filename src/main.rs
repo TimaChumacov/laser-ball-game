@@ -19,6 +19,7 @@ fn main() {
     .run()
 }
 
+// The 3 core states of the app
 #[derive(States, Debug, Clone, Copy, Eq, PartialEq, Hash, Default)]
 pub enum AppState {
     #[default]

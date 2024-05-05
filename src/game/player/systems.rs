@@ -40,12 +40,13 @@ pub fn player_attacked(
     player_query: Query<&Transform, With<Player>>,
     mut player_stats: ResMut<PlayerStats>,
 ) {
-    let player_trans = player_query.single();
-    for enemy_trans in enemy_query.iter() {
-        if !player_stats.invincible && player_trans.translation.distance(enemy_trans.translation) < ENTITY_SPRITE_DIAMETER {
-            player_stats.hitpoints -= 1;
-            player_stats.invincible = true;
-            println!("player got hit by an enemy. hp remaining: {}", player_stats.hitpoints);
+    if let Ok(player_trans) = player_query.get_single() {
+        for enemy_trans in enemy_query.iter() {
+            if !player_stats.invincible && player_trans.translation.distance(enemy_trans.translation) < ENTITY_SPRITE_DIAMETER {
+                player_stats.hitpoints -= 1;
+                player_stats.invincible = true;
+                println!("Player got hit by an enemy. hp remaining: {}", player_stats.hitpoints);
+            }
         }
     }
 }
@@ -64,9 +65,12 @@ pub fn tick_invincibility_timer(mut invincibility_timer: ResMut<InvincibilityTim
 pub fn kill_player(
     player_stats: ResMut<PlayerStats>,
     mut next_app_state: ResMut<NextState<AppState>>,
+    asset_server: Res<AssetServer>,
+    audio: Res<Audio>,
 ) {
     if player_stats.hitpoints <= 0 {
         println!("player is dead");
+        audio.play(asset_server.load("audio/loss.ogg"));
         next_app_state.set(AppState::GameOver);
     }
 }
@@ -110,7 +114,7 @@ impl Default for PlayerStats {
     fn default() -> Self {
         PlayerStats {
             score: 0,
-            hitpoints: 555,
+            hitpoints: 10,
             enemy_count: 0,
             invincible: false,
         }

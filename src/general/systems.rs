@@ -74,12 +74,14 @@ pub fn entity_collision(
         if transform_1.translation.distance(transform_2.translation) < ENTITY_SPRITE_DIAMETER {
             let mut dir_away: Vec3;
             
+            // after the collision I create some space between the 2 objects so they don't get stuck in each other
             dir_away = (transform_1.translation - transform_2.translation).normalize();
             dir_away *= (ENTITY_SPRITE_DIAMETER - transform_1.translation.distance(transform_2.translation)) / 2.0;
 
             transform_1.translation += dir_away;
             transform_2.translation -= dir_away;
             
+            // then I basically swap their accelerations. It works with head-on collisions, but not with hitting sides of the ball
             let new_vel_1 = velocity_2.acceleration;
             let new_vel_2 = velocity_1.acceleration;
 
@@ -100,47 +102,14 @@ pub fn toggle_pause(
     game_state: Res<State<GameState>>,
     mut next_game_state: ResMut<NextState<GameState>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::Space) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
         if game_state.0 == GameState::Running {
             next_game_state.set(GameState::Paused);
-            println!("paused.");
+            println!("Game is paused.");
         }
         if game_state.0 == GameState::Paused {
             next_game_state.set(GameState::Running);
-            println!("running.");
+            println!("Game is running.");
         }
     }
 }
-
-// pub fn enter_game_state(
-//     mut commands: Commands,
-//     keyboard_input: Res<Input<KeyCode>>,
-//     app_state: Res<State<AppState>>,
-//     mut next_app_state: ResMut<NextState<AppState>>,
-// ) {
-//     if keyboard_input.just_pressed(KeyCode::L) {
-//         if app_state.0 == AppState::MainMenu {
-//             next_app_state.set(AppState::Game);
-//             commands.insert_resource(PlayerStats::default());
-//             println!("in game.");
-//         }
-//     }
-// }
-
-// pub fn enter_main_menu(
-//     keyboard_input: Res<Input<KeyCode>>,
-//     app_state: Res<State<AppState>>,
-//     game_state: Res<State<GameState>>,
-//     mut next_app_state: ResMut<NextState<AppState>>,
-//     mut next_game_state: ResMut<NextState<GameState>>,
-// ) {
-//     if keyboard_input.just_pressed(KeyCode::Escape) {
-//         if app_state.0 == AppState::Game {
-//             next_app_state.set(AppState::MainMenu);
-//             println!("in main menu.");
-//         }
-//         if game_state.0 == GameState::Paused {
-//             next_game_state.set(GameState::Running);
-//         }
-//     }
-// }
