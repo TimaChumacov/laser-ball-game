@@ -115,6 +115,8 @@ pub fn laser_collision(
     player_query: Query<&Transform, With<Player>>,
     enemy_query: Query<(&Transform, &Enemy)>,
     mut player_stats: ResMut<PlayerStats>,
+    asset_server: Res<AssetServer>,
+    audio: Res<Audio>,
 ) {
     for laser in lasers_query.iter() {
         let (pivot_a, pivot_b) = find_enemies_by_id(&enemy_query, laser.pivot_a_id, laser.pivot_b_id);
@@ -126,6 +128,7 @@ pub fn laser_collision(
             // the value of 5.75 is eyeballed so the hitbox isn't pixel accurate
             if (player_distance_to_pivots - distance_between_pivots) < 5.75 && !player_stats.invincible && laser.lifetime > 1.3 {
                 player_stats.hitpoints -= 1;
+                audio.play(asset_server.load("audio/damaged.ogg"));
                 println!("laser touched! players hp: {}", player_stats.hitpoints);
                 player_stats.invincible = true;
             }

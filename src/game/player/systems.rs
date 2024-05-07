@@ -39,22 +39,36 @@ pub fn player_attacked(
     enemy_query: Query<&Transform, With<Enemy>>,
     player_query: Query<&Transform, With<Player>>,
     mut player_stats: ResMut<PlayerStats>,
+    asset_server: Res<AssetServer>,
+    audio: Res<Audio>,
 ) {
     if let Ok(player_trans) = player_query.get_single() {
         for enemy_trans in enemy_query.iter() {
             if !player_stats.invincible && player_trans.translation.distance(enemy_trans.translation) < ENTITY_SPRITE_DIAMETER {
                 player_stats.hitpoints -= 1;
                 player_stats.invincible = true;
+                audio.play(asset_server.load("audio/damaged.ogg"));
                 println!("Player got hit by an enemy. hp remaining: {}", player_stats.hitpoints);
             }
         }
     }
 }
 
-pub fn tick_invincibility_timer(mut invincibility_timer: ResMut<InvincibilityTimer>, time: Res<Time>, mut player_stats: ResMut<PlayerStats>) {
+pub fn tick_invincibility_timer(
+    mut player_query: Query<&mut Transform, With<Player>>,
+    mut invincibility_timer: ResMut<InvincibilityTimer>, 
+    time: Res<Time>, mut player_stats: ResMut<PlayerStats>
+) {
     if player_stats.invincible == true {
         invincibility_timer.timer.tick(time.delta());
         println!("time spent invincible: {}", invincibility_timer.timer.elapsed_secs());
+        let mut player_transform = player_query.single_mut();
+        // player sprite flashes when he is invincible
+        if invincibility_timer.timer.elapsed_secs() % 0.2 < 0.1 {
+            player_transform.scale = Vec3::ZERO;
+        } else {
+            player_transform.scale = Vec3::ONE;
+        }
         if invincibility_timer.timer.finished() {
             player_stats.invincible = false;
             invincibility_timer.timer.reset();

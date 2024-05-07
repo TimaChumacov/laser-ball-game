@@ -24,6 +24,13 @@ pub const TITLE_STYLE: Style = Style {
     ..Style::DEFAULT
 };
 
+pub const GUIDE_STYLE: Style = Style {
+    position_type: PositionType::Absolute,
+    position: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(500.0), Val::Px(0.0)),
+    size: Size::new(Val::Px(400.0), Val::Px(160.0)),
+    ..Style::DEFAULT
+};
+
 pub const WRAPP_STYLE: Style = Style {
     flex_direction: FlexDirection::Column,
     justify_content: JustifyContent::Center,

@@ -142,6 +142,39 @@ pub fn build_main_menu(commands: &mut Commands, asset_server: &Res<AssetServer>)
                 }
             );
         });
+        // --- Guide ---
+        parent.spawn(
+            NodeBundle {
+                style: GUIDE_STYLE,
+                ..default()
+            }
+        ).with_children(|parent| {
+            //--- Text ---
+            parent.spawn(
+                TextBundle {
+                    text: Text {
+                        sections: vec![
+                            TextSection::new(
+                                "
+                                Dodge the red balls and the lasers!
+                                Try to collect as much stars as you can.
+                                The controlls are quite BOUNCY...
+                                Move with [W][A][S][D] and [ESC] to pause
+                                ",
+                                TextStyle {
+                                    font: asset_server.load("fonts/FiraSans-Bold.ttf"),
+                                    font_size: 20.0,
+                                    color: Color::WHITE
+                                }
+                            )
+                        ],
+                        alignment: TextAlignment::Center,
+                        ..default()
+                    },
+                    ..default()
+                }
+            );
+        });
     })
     .id();
 
